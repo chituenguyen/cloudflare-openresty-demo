@@ -1,0 +1,27 @@
+- name: Setup demo server
+  hosts: demo
+  become: yes
+  roles:
+    - common
+    - docker
+    - nginx
+    - fail2ban
+
+  handlers:
+    - name: restart sshd
+      service:
+        name: sshd
+        state: restarted
+
+    - name: reload nginx
+      service:
+        name: nginx
+        state: reloaded
+
+    - name: restart fail2ban
+      service:
+        name: fail2ban
+        state: restarted
+
+    - name: docker compose up
+      shell: cd /opt/demo/infra && docker compose up -d --build

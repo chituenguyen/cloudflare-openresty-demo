@@ -1,0 +1,55 @@
+# OpenResty = Nginx + LuaJIT — cài từ official repo
+- name: Add OpenResty GPG key
+  apt_key:
+    url: https://openresty.org/package/pubkey.gpg
+    keyring: /usr/share/keyrings/openresty.gpg
+    state: present
+
+- name: Add OpenResty repo
+  apt_repository:
+    repo: "deb [arch=amd64 signed-by=/usr/share/keyrings/openresty.gpg] http://openresty.org/package/ubuntu jammy main"
+    filename: openresty
+    state: present
+
+- name: Install OpenResty
+  apt:
+    name: openresty
+    state: present
+    update_cache: yes
+
+- name: Install lua-resty-jwt via opm
+  command: opm get SkyLothar/lua-resty-jwt
+  args:
+    creates: /usr/local/openresty/site/lualib/resty/jwt.lua
+
+- name: Create certs directory
+  file:
+    path: /etc/nginx/certs
+    state: directory
+    mode: "0700"
+
+- name: Copy nginx.conf
+  copy:
+    src: "{{ playbook_dir }}/../openresty/nginx.conf"
+    dest: /usr/local/openresty/nginx/conf/nginx.conf
+  notify: reload openresty
+
+- name: Create sites-enabled directory
+  file:
+    path: /usr/local/openresty/nginx/conf/sites-enabled
+    state: directory
+
+- name: Copy site config
+  copy:
+    src: "{{ playbook_dir }}/../openresty/sites/demo.conf"
+    dest: /usr/local/openresty/nginx/conf/sites-enabled/demo.conf
+  notify: reload openresty
+
+- name: Start and enable OpenResty
+  service:
+    name: openresty
+    state: started
+    enabled: yes
+
+- name: Reload OpenResty
+  meta: flush_handlers

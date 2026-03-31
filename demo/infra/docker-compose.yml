@@ -1,0 +1,17 @@
+services:
+  backend:
+    build: ../backend
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3001:3001"  # chỉ expose local, Nginx proxy vào
+    environment:
+      - NODE_ENV=production
+
+  fe:
+    build: ../fe
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:4000:4000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=https://api.yourdomain.com

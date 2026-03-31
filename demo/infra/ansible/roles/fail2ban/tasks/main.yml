@@ -1,0 +1,22 @@
+- name: Install Fail2ban
+  apt:
+    name: fail2ban
+    state: present
+
+- name: Copy jail config
+  copy:
+    src: "{{ playbook_dir }}/../fail2ban/jail.local"
+    dest: /etc/fail2ban/jail.local
+  notify: restart fail2ban
+
+- name: Copy filters
+  copy:
+    src: "{{ playbook_dir }}/../fail2ban/filter.d/"
+    dest: /etc/fail2ban/filter.d/
+  notify: restart fail2ban
+
+- name: Start and enable Fail2ban
+  service:
+    name: fail2ban
+    state: started
+    enabled: yes
