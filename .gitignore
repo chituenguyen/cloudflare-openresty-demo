@@ -1,0 +1,19 @@
+# Python
+venv/
+.venv/
+__pycache__/
+*.pyc
+
+# Secrets
+*.env
+!*.env.production
+*.key
+*.pem
+
+# Node
+node_modules/
+.next/
+
+# Sofascore reverse-engineering artifacts (không cần share)
+_app-*.js
+_NEXT_DATA_.json
